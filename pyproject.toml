@@ -1,0 +1,16 @@
+[project]
+name = "seefood-py"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "openai>=1.109.1",
+    "opencv-python>=4.12.0.88",
+    "setuptools>=80.9.0",
+    "smbus2>=0.5.0",
+    "vl53l0x",
+]
+
+[tool.uv.sources]
+vl53l0x = { git = "https://github.com/pimoroni/VL53L0X-python.git" }
