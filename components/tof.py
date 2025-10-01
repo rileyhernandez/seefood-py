@@ -17,21 +17,23 @@ class Tof:
         timing = vl530x.get_timing()
         if timing < 20_000:
             timing = 20_000
+        print("Timing %d ms" % (timing / 1000))
         time.sleep(timing/1_000_000)
 
-        # tof.stop_ranging()
+        vl530x.stop_ranging()
         # tof.close()
         return cls(vl530x)
 
     def read(self, samples: int, sample_period_millis: int) -> float:
+        self.vl53l0x.start_ranging(Vl53l0xAccuracyMode.BETTER)
         distances: list[int] = []
         for _ in range(samples):
             distances.append(self.vl53l0x.get_distance())
             time.sleep(sample_period_millis / 1000)
+        self.vl53l0x.stop_ranging()
         return sum(distances)/len(distances)
 
     def close(self):
-        self.vl53l0x.stop_ranging()
         self.vl53l0x.close()
 
 if __name__ == "__main__":
