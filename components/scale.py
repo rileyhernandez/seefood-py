@@ -19,7 +19,7 @@ class Scale:
         return cls(nau7802, gain, offset, sample_period_millis)
 
     def read(self) -> float:
-        return self.nau7802.get_weight()
+        return self.nau7802.get_reading()
 
     # def live_weigh(self) -> float:
     #     return self.read()*self.gain + self.offset
