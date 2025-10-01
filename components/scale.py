@@ -28,9 +28,9 @@ class Scale:
     def read(self) -> float:
         return self.nau7802.get_reading()
 
-    # def live_weigh(self) -> float:
-    #     return self.read()*self.gain + self.offset
-    #
+    def live_weigh(self) -> float:
+        return self.read()*self.gain + self.offset
+
     # def weigh(self, samples) -> float:
     #     weights: list[float] = []
     #     for _sample in range(samples):
@@ -40,7 +40,7 @@ class Scale:
     #     return weights[samples//2]
 
 if __name__ == "__main__":
-    scale = Scale.new(gain=0.00470098677/10072484.2624, offset=35.065176)
+    scale = Scale.new(gain=0.00470098677, offset=0)
     for _ in range(10):
-        print("Weight: ", scale.read())
+        print("Weight: ", scale.live_weigh())
         time.sleep(0.25)
