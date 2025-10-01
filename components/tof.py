@@ -1,6 +1,7 @@
 import time
 from VL53L0X import VL53L0X, Vl53l0xAccuracyMode
 from dataclasses import dataclass
+from typing import Self
 
 @dataclass
 class Tof:
