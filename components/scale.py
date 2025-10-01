@@ -1,7 +1,6 @@
 import time
 from typing import Self
 from dataclasses import dataclass
-import qwiic_nau7802
 from qwiic_nau7802 import QwiicNAU7802
 
 
@@ -16,7 +15,14 @@ class Scale:
     def new(cls, gain: float, offset: float, sample_period_millis: int = 250) -> Self:
         nau7802 = QwiicNAU7802()
         nau7802.begin()
-        _throwaway_reading = nau7802.get_reading()
+        # Run analog front end calibration
+        nau7802.calibrate_afe()
+        time.sleep(0.5)
+
+        # Throw away several startup readings until filter settles
+        for _ in range(20):
+            _ = nau7802.get_reading()
+            time.sleep(0.05)
         return cls(nau7802, gain, offset, sample_period_millis)
 
     def read(self) -> float:
