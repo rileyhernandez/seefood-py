@@ -16,6 +16,7 @@ class Scale:
     def new(cls, gain: float, offset: float, sample_period_millis: int = 250) -> Self:
         nau7802 = QwiicNAU7802()
         nau7802.begin()
+        _throwaway_reading = nau7802.get_reading()
         return cls(nau7802, gain, offset, sample_period_millis)
 
     def read(self) -> float:
