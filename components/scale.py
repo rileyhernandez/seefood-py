@@ -3,6 +3,9 @@ from typing import Self
 from cedargrove_nau7802 import NAU7802  # type: ignore
 from dataclasses import dataclass
 import board   # type: ignore
+import sys
+sys.modules['digitalio'] = object()
+
 
 @dataclass
 class Scale:
