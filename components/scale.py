@@ -17,7 +17,7 @@ class Scale:
         nau7802.begin()
         # Run analog front end calibration
         nau7802.calibrate_afe()
-        time.sleep(0.5)
+        time.sleep(1)
 
         # Throw away several startup readings until filter settles
         for _ in range(20):
@@ -40,7 +40,7 @@ class Scale:
     #     return weights[samples//2]
 
 if __name__ == "__main__":
-    scale = Scale.new(gain=0.0013512, offset=-566.52)
+    scale = Scale.new(gain=0.0013512, offset=0)
     for _ in range(10):
         print("Weight: ", scale.live_weigh())
         time.sleep(0.25)
