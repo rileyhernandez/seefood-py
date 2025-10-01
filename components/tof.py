@@ -12,6 +12,7 @@ class Tof:
         vl530x = VL53L0X(i2c_bus=i2c_bus, i2c_address=i2c_address)
         vl530x.open()
         vl530x.start_ranging(Vl53l0xAccuracyMode.BETTER)
+        time.sleep(1)
         return cls(vl530x)
 
     def read(self, samples: int, sample_period_millis: int) -> float:
