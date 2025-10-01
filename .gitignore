@@ -12,3 +12,5 @@ wheels/
 # IDE files
 /.idea
 /.zed
+
+/.images
