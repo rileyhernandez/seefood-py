@@ -40,7 +40,7 @@ class Scale:
     #     return weights[samples//2]
 
 if __name__ == "__main__":
-    scale = Scale.new(gain=10072484.2624, offset=35.065176)
+    scale = Scale.new(gain=0.00470098677/10072484.2624, offset=35.065176)
     for _ in range(10):
         print("Weight: ", scale.read())
         time.sleep(0.25)
