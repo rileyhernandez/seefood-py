@@ -5,6 +5,9 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "adafruit-blinka>=8.66.2",
+    "adafruit-circuitpython-busdevice>=5.2.13",
+    "adafruit-circuitpython-register>=1.10.4",
     "cedargrove-nau7802>=2.1.2",
     "openai>=1.109.1",
     "opencv-python>=4.12.0.88",
