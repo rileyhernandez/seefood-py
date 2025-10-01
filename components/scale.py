@@ -1,29 +1,26 @@
 import time
 from typing import Self
-from cedargrove_nau7802 import NAU7802  # type: ignore
 from dataclasses import dataclass
-import board   # type: ignore
-import sys
-sys.modules['digitalio'] = object()
+import qwiic_nau7802
+from qwiic_nau7802 import QwiicNAU7802
 
 
 @dataclass
 class Scale:
-    nau7802: NAU7802
+    nau7802: QwiicNAU7802
     gain: float
     offset: float
     sample_period_millis: int
 
     @classmethod
     def new(cls, gain: float, offset: float, sample_period_millis: int = 250) -> Self:
-        nau7802 = NAU7802(board.I2C(), address=0x2A, active_channels=1)
-        nau7802.reset()
-        nau7802.enable()
+        nau7802 = QwiicNAU7802()
+        nau7802.begin()
         return cls(nau7802, gain, offset, sample_period_millis)
 
     def read(self) -> float:
-        return self.nau7802.read()
-    #
+        return self.nau7802.get_weight()
+
     # def live_weigh(self) -> float:
     #     return self.read()*self.gain + self.offset
     #
