@@ -20,7 +20,7 @@ class Tof:
         for _ in range(samples):
             distances.append(self.vl53l0x.get_distance())
             time.sleep(sample_period_millis / 1000)
-        return sum(distances)/len(distances)
+        return distances[samples // 2]
 
     def close(self):
         self.vl53l0x.stop_ranging()
