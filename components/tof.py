@@ -30,6 +30,6 @@ if __name__ == "__main__":
     tof = Tof.new()
     try:
         for _ in range(10):
-            print("Distance: ", tof.read(100, 10))
+            print("Distance: ", tof.read(100, 1))
     finally:
         tof.close()
