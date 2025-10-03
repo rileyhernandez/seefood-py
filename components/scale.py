@@ -2,17 +2,16 @@ import time
 from typing import Self
 from dataclasses import dataclass
 from qwiic_nau7802 import QwiicNAU7802
+from config import Scale as ScaleConfig
 
 
 @dataclass
 class Scale:
     nau7802: QwiicNAU7802
-    gain: float
-    offset: float
-    sample_period_millis: int
+    config: ScaleConfig
 
     @classmethod
-    def new(cls, gain: float, offset: float, sample_period_millis: int = 250) -> Self:
+    def new(cls, scale_config: ScaleConfig) -> Self:
         nau7802 = QwiicNAU7802()
         nau7802.begin()
         # Run analog front end calibration
@@ -23,13 +22,13 @@ class Scale:
         for _ in range(20):
             _ = nau7802.get_reading()
             time.sleep(0.05)
-        return cls(nau7802, gain, offset, sample_period_millis)
+        return cls(nau7802, scale_config)
 
     def read(self) -> float:
         return self.nau7802.get_reading()
 
     def live_weigh(self) -> float:
-        return self.read()*self.gain + self.offset
+        return self.read()*self.config.gain
 
     # def weigh(self, samples) -> float:
     #     weights: list[float] = []
@@ -40,7 +39,8 @@ class Scale:
     #     return weights[samples//2]
 
 if __name__ == "__main__":
-    scale = Scale.new(gain=0.0013512, offset=0)
+    config = ScaleConfig(0.0013512, 100)
+    scale = Scale.new(config)
     for _ in range(10):
         print("Weight: ", scale.live_weigh())
         time.sleep(0.25)
