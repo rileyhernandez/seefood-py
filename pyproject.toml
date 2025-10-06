@@ -23,7 +23,9 @@ readme = "README.md"
 # Explicitly pin to Python 3.11 so uv uses the stable ABI
 requires-python = "==3.11.*"
 dependencies = [
+    "asyncio>=4.0.0",
     "opencv-python>=4.12.0.88",
+    "phidget22>=1.23.20250925",
     "setuptools>=80.9.0",
     "smbus2>=0.5.0",
     "sparkfun-qwiic-nau7802>=2.0.0",
