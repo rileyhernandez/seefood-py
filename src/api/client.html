@@ -20,7 +20,7 @@
 
         .header {
             background: #2d2d2d;
-            padding: 20px 30px;
+            padding: 15px 25px;
             margin-bottom: 20px;
             border-radius: 8px;
             display: flex;
@@ -28,17 +28,29 @@
             align-items: center;
         }
 
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
         .header h1 {
             color: #fff;
-            font-size: 1.8em;
+            font-size: 1.6em;
             font-weight: 600;
         }
 
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
         .status {
-            padding: 8px 20px;
+            padding: 6px 16px;
             border-radius: 6px;
             font-weight: 600;
-            font-size: 0.9em;
+            font-size: 0.85em;
         }
 
         .status.connected {
@@ -54,6 +66,29 @@
         .status.waiting {
             background: #ff9800;
             color: white;
+        }
+
+        .timestamp {
+            color: #bbb;
+            font-size: 0.8em;
+        }
+
+        .refresh-btn {
+            padding: 8px 14px;
+            background: #00c853;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.8em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .refresh-btn:hover {
+            background: #00b248;
         }
 
         .main-container {
@@ -82,7 +117,7 @@
             border-bottom: 2px solid #404040;
         }
 
-        /* Left Column - Image & Weight */
+        /* Left Column */
         .image-container {
             flex: 1;
             display: flex;
@@ -108,6 +143,15 @@
             background: #1a1a1a;
             border-radius: 8px;
             border: 2px solid #404040;
+            transition: border-color 0.3s;
+        }
+
+        .weight-display.in-tolerance {
+            border-color: #00c853;
+        }
+
+        .weight-display.out-of-tolerance {
+            border-color: #d32f2f;
         }
 
         .weight-label {
@@ -125,7 +169,25 @@
             font-variant-numeric: tabular-nums;
         }
 
-        /* Middle Column - Items */
+        .weight-percentage {
+            color: #999;
+            font-size: 1.2em;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+
+        .weight-percentage.out-of-tolerance {
+            color: #d32f2f;
+        }
+
+        .weight-target {
+            color: #999;
+            font-size: 1em;
+            margin-top: 15px;
+            font-weight: 500;
+        }
+
+        /* Middle Column */
         .items-list {
             flex: 1;
             overflow-y: auto;
@@ -207,111 +269,99 @@
             color: #d32f2f;
         }
 
-        /* Right Column - Controls & Info */
-        .controls-section {
+        /* Ticket Status Column */
+        .ticket-container {
             flex: 1;
             display: flex;
             flex-direction: column;
+            align-items: center;
             gap: 20px;
         }
 
-        .info-card {
+        .ticket-order {
             background: #1a1a1a;
-            border-radius: 8px;
-            padding: 25px;
             border: 2px solid #404040;
-        }
-
-        .info-label {
-            color: #999;
-            font-size: 0.85em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-        }
-
-        .info-value {
-            color: #fff;
-            font-size: 1.2em;
-            font-weight: 500;
-        }
-
-        .refresh-btn {
-            width: 100%;
+            border-radius: 8px;
             padding: 20px;
+            color: #fff;
+            font-size: 1.3em;
+            font-weight: 600;
+            width: 80%;
+            text-align: center;
+            transition: border-color 0.3s;
+        }
+
+        .ticket-order.order-correct {
+            border-color: #00c853;
+        }
+
+        .ticket-order.order-error {
+            border-color: #d32f2f;
+        }
+
+        .complete-btn {
+            padding: 18px 24px;
             background: #00c853;
             color: white;
             border: none;
             border-radius: 8px;
-            font-size: 1.1em;
+            font-size: 1em;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.2s;
             text-transform: uppercase;
             letter-spacing: 1px;
+            transition: background 0.2s, opacity 0.2s;
+            width: 80%;
         }
 
-        .refresh-btn:hover {
+        .complete-btn:hover:not(:disabled) {
             background: #00b248;
         }
 
-        .refresh-btn:active {
-            background: #009e40;
-        }
-
-        .auto-refresh {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 20px;
-            background: #1a1a1a;
-            border-radius: 8px;
-            border: 2px solid #404040;
-        }
-
-        .auto-refresh input[type="checkbox"] {
-            width: 22px;
-            height: 22px;
-            cursor: pointer;
-        }
-
-        .auto-refresh label {
-            color: #fff;
-            font-size: 1em;
-            cursor: pointer;
-            flex: 1;
-        }
-
-        /* Scrollbar styling */
-        .items-list::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .items-list::-webkit-scrollbar-track {
-            background: #1a1a1a;
-            border-radius: 4px;
-        }
-
-        .items-list::-webkit-scrollbar-thumb {
-            background: #404040;
-            border-radius: 4px;
-        }
-
-        .items-list::-webkit-scrollbar-thumb:hover {
+        .complete-btn:disabled {
             background: #555;
+            cursor: not-allowed;
+            opacity: 0.6;
         }
 
-        .no-data {
-            color: #999;
+        .error-message {
+            color: #d32f2f;
+            font-size: 0.95em;
+            font-weight: 500;
             text-align: center;
-            padding: 20px;
+        }
+
+        .override-btn {
+            padding: 18px 24px;
+            background: #d32f2f;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background 0.2s;
+            width: 80%;
+            margin-top: auto;
+        }
+
+        .override-btn:hover {
+            background: #b71c1c;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1 id="orderNumber">Libra Visión Monitor</h1>
-        <div id="status" class="status waiting">Waiting for data...</div>
+        <div class="header-left">
+            <h1 id="orderNumber">Libra Visión Monitor</h1>
+        </div>
+        <div class="header-right">
+            <div id="status" class="status waiting">Waiting for data...</div>
+            <div class="timestamp" id="timestamp">--</div>
+            <button class="refresh-btn" onclick="fetchData()">Refresh</button>
+        </div>
     </div>
 
     <div class="main-container">
@@ -320,9 +370,11 @@
             <div class="column-header">Visual & Weight</div>
             <div class="image-container">
                 <img id="foodImage" src="" alt="Food Image" />
-                <div class="weight-display">
+                <div class="weight-display" id="weightDisplay">
                     <div class="weight-label">Weight</div>
                     <div class="weight-value" id="weight">--</div>
+                    <div class="weight-target" id="weightTarget"></div>
+                    <div class="weight-percentage" id="weightPercentage"></div>
                 </div>
             </div>
         </div>
@@ -330,41 +382,29 @@
         <!-- Middle Column: Items -->
         <div class="column">
             <div class="column-header">Order Items</div>
-            <div class="items-list" id="itemsList">
-                <!-- Item cards will be inserted here -->
-            </div>
+            <div class="items-list" id="itemsList"></div>
         </div>
 
-        <!-- Right Column: Controls & Info -->
+        <!-- Right Column: Ticket Status -->
         <div class="column">
-            <div class="column-header">Status & Controls</div>
-            <div class="controls-section">
-                <div class="info-card">
-                    <div class="info-label">Last Updated</div>
-                    <div class="info-value" id="timestamp">--</div>
-                </div>
-
-                <button class="refresh-btn" onclick="fetchData()">Refresh Data</button>
-
-                <div class="auto-refresh">
-                    <input type="checkbox" id="autoRefresh" onchange="toggleAutoRefresh()">
-                    <label for="autoRefresh">Auto-refresh every 2 seconds</label>
-                </div>
+            <div class="column-header">Ticket Status</div>
+            <div class="ticket-container">
+                <div class="ticket-order" id="ticketOrder">Order: --</div>
+                <button class="complete-btn" id="completeBtn" disabled>Complete Order</button>
+                <div class="error-message" id="orderError">Order must be corrected before completion.</div>
+                <button class="override-btn" id="overrideBtn" style="display: none;">Override & Complete</button>
             </div>
         </div>
     </div>
 
     <script>
-        let autoRefreshInterval = null;
-
         async function fetchData() {
             try {
-                const orderNumber = await fetch('/order')
-                if (orderNumber) {
-                    document.getElementById("orderNumber").textContent = await orderNumber.text()
-                }
+                const orderNumberResp = await fetch('/order');
+                const orderNumber = orderNumberResp ? await orderNumberResp.text() : '--';
+                document.getElementById("orderNumber").textContent = orderNumber;
+                document.getElementById("ticketOrder").textContent = `${orderNumber}`;
 
-                // Fetch main data (weight, timestamp)
                 const dataResponse = await fetch('/data');
                 const data = await dataResponse.json();
 
@@ -372,24 +412,50 @@
                 statusEl.className = 'status connected';
                 statusEl.textContent = 'Connected ✓';
 
-                // Update weight
-                const weightValue = data.weight !== null ? `${data.weight}g` : '--';
+                const weightResponse = await fetch('/weight');
+                const weightData = await weightResponse.json();
+
+                const weightValue = weightData.weight !== null ? `${weightData.weight}g` : '--';
                 document.getElementById('weight').textContent = weightValue;
 
-                // Update timestamp
+                const weightDisplay = document.getElementById('weightDisplay');
+                const weightPercentage = document.getElementById('weightPercentage');
+                const weightTarget = document.getElementById('weightTarget');
+
+                if (weightData.weight !== null && weightData.theoretical_weight !== null) {
+                    const percentage = (weightData.weight / weightData.theoretical_weight) * 100;
+                    const percentageDiff = Math.abs(percentage - 100);
+
+                    weightTarget.textContent = `Target: ${weightData.theoretical_weight}g`;
+                    if (percentage > 100) {
+                        weightPercentage.textContent = `+${percentageDiff.toFixed(1)}%`;
+                    } else {
+                        weightPercentage.textContent = `-${percentageDiff.toFixed(1)}%`;
+                    }
+                    if (percentageDiff > weightData.tolerance) {
+                        weightDisplay.classList.add('out-of-tolerance');
+                        weightDisplay.classList.remove('in-tolerance');
+                        weightPercentage.classList.add('out-of-tolerance');
+                    } else {
+                        weightDisplay.classList.add('in-tolerance');
+                        weightDisplay.classList.remove('out-of-tolerance');
+                        weightPercentage.classList.remove('out-of-tolerance');
+                    }
+                } else {
+                    weightTarget.textContent = '';
+                    weightPercentage.textContent = '';
+                    weightDisplay.classList.remove('out-of-tolerance', 'in-tolerance');
+                }
+
                 if (data.timestamp) {
                     const date = new Date(data.timestamp * 1000);
-                    document.getElementById('timestamp').textContent =
-                        date.toLocaleString();
+                    document.getElementById('timestamp').textContent = date.toLocaleString();
                 } else {
                     document.getElementById('timestamp').textContent = 'No timestamp';
                 }
 
-                // Update image
-                const foodImage = document.getElementById('foodImage');
-                foodImage.src = '/image?t=' + new Date().getTime();
+                document.getElementById('foodImage').src = '/image?t=' + new Date().getTime();
 
-                // Fetch items from /items endpoint
                 const itemsResponse = await fetch('/items');
                 const items = await itemsResponse.json();
 
@@ -398,81 +464,43 @@
 
                 if (items && Array.isArray(items) && items.length > 0) {
                     items.forEach(item => {
-                        // Check if item has ingredients
                         const hasIngredients = item.ingredients && Array.isArray(item.ingredients) && item.ingredients.length > 0;
+                        const allIngredientsPresent = hasIngredients ? item.ingredients.every(i => i.present) : true;
+                        const itemFullyPresent = item.present && allIngredientsPresent;
+
+                        const itemCard = document.createElement('div');
+                        itemCard.className = `item-card ${itemFullyPresent ? 'present' : 'missing'}`;
+
+                        const itemHeader = document.createElement('div');
+                        itemHeader.className = 'item-header';
+
+                        const itemName = document.createElement('div');
+                        itemName.className = 'item-name';
+                        itemName.textContent = item.name;
+
+                        const itemStatus = document.createElement('div');
+                        itemStatus.className = `item-status ${itemFullyPresent ? 'present' : 'missing'}`;
+                        itemStatus.textContent = itemFullyPresent ? '✓' : '✗';
+
+                        itemHeader.append(itemName, itemStatus);
+                        itemCard.appendChild(itemHeader);
 
                         if (hasIngredients) {
-                            // Check if all ingredients are present
-                            const allIngredientsPresent = item.ingredients.every(ingredient => ingredient.present);
-                            const itemFullyPresent = item.present && allIngredientsPresent;
-
-                            // Item with ingredients - show as card
-                            const itemCard = document.createElement('div');
-                            itemCard.className = `item-card ${itemFullyPresent ? 'present' : 'missing'}`;
-
-                            // Item header
-                            const itemHeader = document.createElement('div');
-                            itemHeader.className = 'item-header';
-
-                            const itemName = document.createElement('div');
-                            itemName.className = 'item-name';
-                            itemName.textContent = item.name;
-
-                            const itemStatus = document.createElement('div');
-                            itemStatus.className = `item-status ${itemFullyPresent ? 'present' : 'missing'}`;
-                            itemStatus.textContent = itemFullyPresent ? '✓' : '✗';
-
-                            itemHeader.appendChild(itemName);
-                            itemHeader.appendChild(itemStatus);
-                            itemCard.appendChild(itemHeader);
-
-                            // Ingredients table
                             const ingredientsTable = document.createElement('div');
                             ingredientsTable.className = 'ingredients-table';
-
                             item.ingredients.forEach(ingredient => {
-                                const ingredientRow = document.createElement('div');
-                                ingredientRow.className = 'ingredient-row';
-
-                                const ingredientName = document.createElement('div');
-                                ingredientName.className = 'ingredient-row-name';
-                                ingredientName.textContent = ingredient.name;
-
-                                const ingredientStatus = document.createElement('div');
-                                ingredientStatus.className = `ingredient-row-status ${ingredient.present ? 'present' : 'missing'}`;
-                                ingredientStatus.textContent = ingredient.present ? '✓' : '✗';
-
-                                ingredientRow.appendChild(ingredientName);
-                                ingredientRow.appendChild(ingredientStatus);
-                                ingredientsTable.appendChild(ingredientRow);
+                                const row = document.createElement('div');
+                                row.className = 'ingredient-row';
+                                row.innerHTML = `
+                                    <div class="ingredient-row-name">${ingredient.name}</div>
+                                    <div class="ingredient-row-status ${ingredient.present ? 'present' : 'missing'}">${ingredient.present ? '✓' : '✗'}</div>
+                                `;
+                                ingredientsTable.appendChild(row);
                             });
-
                             itemCard.appendChild(ingredientsTable);
-                            itemsList.appendChild(itemCard);
-                        } else {
-                            // Simple item without ingredients - show as single row
-                            const simpleRow = document.createElement('div');
-                            simpleRow.className = 'ingredient-row';
-                            simpleRow.style.background = '#1a1a1a';
-                            simpleRow.style.padding = '16px 20px';
-                            simpleRow.style.borderRadius = '8px';
-                            simpleRow.style.border = `2px solid ${item.present ? '#00c853' : '#d32f2f'}`;
-                            simpleRow.style.marginBottom = '16px';
-
-                            const itemName = document.createElement('div');
-                            itemName.style.color = '#fff';
-                            itemName.style.fontSize = '1.1em';
-                            itemName.style.fontWeight = '500';
-                            itemName.textContent = item.name;
-
-                            const itemStatus = document.createElement('div');
-                            itemStatus.className = `ingredient-row-status ${item.present ? 'present' : 'missing'}`;
-                            itemStatus.textContent = item.present ? '✓' : '✗';
-
-                            simpleRow.appendChild(itemName);
-                            simpleRow.appendChild(itemStatus);
-                            itemsList.appendChild(simpleRow);
                         }
+
+                        itemsList.appendChild(itemCard);
                     });
                 } else {
                     const noData = document.createElement('div');
@@ -481,6 +509,7 @@
                     itemsList.appendChild(noData);
                 }
 
+                updateCompletionStatus();
             } catch (error) {
                 const statusEl = document.getElementById('status');
                 statusEl.className = 'status error';
@@ -489,20 +518,29 @@
             }
         }
 
-        function toggleAutoRefresh() {
-            const checkbox = document.getElementById('autoRefresh');
-            if (checkbox.checked) {
-                fetchData();
-                autoRefreshInterval = setInterval(fetchData, 2000);
+        function updateCompletionStatus() {
+            const hasError = document.querySelector('.item-card.missing') ||
+                             document.querySelector('.weight-display.out-of-tolerance');
+            const completeBtn = document.getElementById('completeBtn');
+            const errorMsg = document.getElementById('orderError');
+            const overrideBtn = document.getElementById('overrideBtn');
+            const ticketOrder = document.getElementById('ticketOrder');
+
+            if (hasError) {
+                completeBtn.disabled = true;
+                errorMsg.style.display = 'block';
+                overrideBtn.style.display = 'block';
+                ticketOrder.classList.add('order-error');
+                ticketOrder.classList.remove('order-correct');
             } else {
-                if (autoRefreshInterval) {
-                    clearInterval(autoRefreshInterval);
-                    autoRefreshInterval = null;
-                }
+                completeBtn.disabled = false;
+                errorMsg.style.display = 'none';
+                overrideBtn.style.display = 'none';
+                ticketOrder.classList.add('order-correct');
+                ticketOrder.classList.remove('order-error');
             }
         }
 
-        // Initial fetch
         fetchData();
     </script>
 </body>

@@ -5,15 +5,17 @@ import time
 import json
 from pathlib import Path
 from flask import Flask, jsonify, send_file, make_response
+from dotenv import load_dotenv
 
 from components.camera import Camera
 from components.scale import Phidget
 from components.llm import OpenAiConvo
 
+
 # Shared data structure
 latest_data = {
     "weight": None,
-    "image_path": None,
+    "image_path": Path(__file__).parent.parent / ".images" / "test.jpg",
     "timestamp": None,
     "items": None
 }
@@ -21,6 +23,8 @@ data_lock = threading.Lock()
 
 # Flask app
 app = Flask(__name__)
+
+load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env")
 
 @app.route('/')
 def index():
@@ -61,6 +65,17 @@ def get_items():
                 return make_response("Invalid JSON response", 500)
         else:
             return make_response("No items available", 404)
+
+@app.route('/weight')
+def get_weight():
+    with data_lock:
+        weight = latest_data.get("weight")
+        theoretical_weight = latest_data.get("theoretical_weight")
+        tolerance = latest_data.get("tolerance")
+        if weight is not None:
+            return jsonify({"weight": weight, "theoretical_weight": theoretical_weight, "tolerance": tolerance})
+        else:
+            return make_response("No weight available", 404)
 
 
 def run_flask():
@@ -138,6 +153,9 @@ def main():
         # Update shared data
         with data_lock:
             latest_data["weight"] = weight
+            latest_data["theoretical_weight"] = 250
+            latest_data["tolerance"] = 5
+
             latest_data["image_path"] = str(image_path)
             latest_data["timestamp"] = time.time()
             latest_data["items"] = items_json

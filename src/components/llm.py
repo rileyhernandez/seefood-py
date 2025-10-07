@@ -11,7 +11,7 @@ system_prompt = """
     Order Items:
     Shrimp Bowl (white sushi rice, shrimp, broccoli),
     Lay's Potato Chips,
-    Soy Sauce Packet
+    BBQ Sauce Packet
     
     For each item in the list, I want you to return whether or not it is present, and if it has ingredients, return if it's ingredients are present in the following way.
     You should respond only with a valid array of json objects.
