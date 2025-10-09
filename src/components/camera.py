@@ -1,6 +1,10 @@
 import subprocess
 import cv2
 
+"""
+should try configuring the camera settings after opening the stream
+"""
+
 DEVICE = "/dev/video4"
 WIDTH = 1280
 HEIGHT = 720
@@ -8,14 +12,14 @@ PIX_FMT = "MJPG"
 FPS = 10
 
 BRIGHTNESS = 0
-CONTRAST = 21
+CONTRAST = 28
 SATURATION = 64
 GAIN = 0
 WHITE_BALANCE_TEMP = 4624
 SHARPNESS = 3
 AUTO_EXPOSURE = 1
 EXPOSURE_TIME = 180
-FOCUS_ABSOLUTE = 290
+FOCUS_ABSOLUTE = 271
 FOCUS_AUTO_CONTINUOUS = 0
 WHITE_BALANCE_AUTO = 0
 

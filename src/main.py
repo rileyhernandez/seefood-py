@@ -82,7 +82,7 @@ def run_flask():
     app.run(host='0.0.0.0', port=5000, debug=False, use_reloader=False)
 
 def main():
-    scale = Phidget.new(9775979.599626426, 0.0001310482621192932)
+    scale = Phidget.new(9775979.599626426, 0.0001310482621192932-0.00002608434)
     camera = Camera()
 
     image_path = Path(__file__).parent.parent / ".images" / "test.jpg"
@@ -153,7 +153,7 @@ def main():
         # Update shared data
         with data_lock:
             latest_data["weight"] = weight
-            latest_data["theoretical_weight"] = 250
+            latest_data["theoretical_weight"] = 480
             latest_data["tolerance"] = 5
 
             latest_data["image_path"] = str(image_path)

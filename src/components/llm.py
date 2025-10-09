@@ -3,16 +3,35 @@ import time
 from pathlib import Path
 from openai import OpenAI
 
+# system_prompt = """
+#     You are a quality tool for a restaurant to determine whether or not all ordered items are present in each order, and whether they each contain their respective ingredients.
+#     I will present you a picture and list of all items that should be present in this order along with each item's ingredients.
+#     Here are our ingredients:
+#
+#     Order Items:
+#     Shrimp Bowl (white sushi rice, shrimp, broccoli),
+#     Lay's Potato Chips,
+#     BBQ Sauce Packet
+#
+#     For each item in the list, I want you to return whether or not it is present, and if it has ingredients, return if it's ingredients are present in the following way.
+#     You should respond only with a valid array of json objects.
+#     Each json object in the array should represent an item in the item list.
+#     Each item json should have the field "name" with a value of a string of the item's name and a field called "present" with a boolean value of it is present in the picture.
+#     If i provided ingredients for the item, there should also be a field called "ingredients" and that should be an array of the ingredients i provided, each with a "name" field for their
+#     name and and "present" field with a boolean of its presence.
+#     For items with ingredients, only consider the ingredient present if it is in that item. Not if it is present somewhere else in the picture.
+#     Respond only with a valid JSON, no extra text or code fences.
+#
+#     """
+
 system_prompt = """
     You are a quality tool for a restaurant to determine whether or not all ordered items are present in each order, and whether they each contain their respective ingredients.
     I will present you a picture and list of all items that should be present in this order along with each item's ingredients.
     Here are our ingredients:
-    
+
     Order Items:
-    Shrimp Bowl (white sushi rice, shrimp, broccoli),
-    Lay's Potato Chips,
-    BBQ Sauce Packet
-    
+    Hawaiian Ahi Bowl (white sushi rice, ahi tuna, green onion, cucumber, avocado),
+
     For each item in the list, I want you to return whether or not it is present, and if it has ingredients, return if it's ingredients are present in the following way.
     You should respond only with a valid array of json objects.
     Each json object in the array should represent an item in the item list. 
@@ -21,8 +40,9 @@ system_prompt = """
     name and and "present" field with a boolean of its presence.
     For items with ingredients, only consider the ingredient present if it is in that item. Not if it is present somewhere else in the picture.
     Respond only with a valid JSON, no extra text or code fences.
-    
+
     """
+
 
 class OpenAiConvo:
     client: OpenAI
