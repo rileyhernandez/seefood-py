@@ -40,55 +40,9 @@
             font-weight: 600;
         }
 
+        /* Hide header-right completely */
         .header-right {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .status {
-            padding: 6px 16px;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.85em;
-        }
-
-        .status.connected {
-            background: #00c853;
-            color: white;
-        }
-
-        .status.error {
-            background: #d32f2f;
-            color: white;
-        }
-
-        .status.waiting {
-            background: #ff9800;
-            color: white;
-        }
-
-        .timestamp {
-            color: #bbb;
-            font-size: 0.8em;
-        }
-
-        .refresh-btn {
-            padding: 8px 14px;
-            background: #00c853;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 0.8em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .refresh-btn:hover {
-            background: #00b248;
+            display: none !important;
         }
 
         .main-container {
@@ -213,9 +167,9 @@
             margin-bottom: 5px;
         }
 
+        /* Hide chit-time */
         .chit-time {
-            font-size: 0.9em;
-            color: #666;
+            display: none !important;
         }
 
         .item-card {
@@ -258,10 +212,6 @@
             letter-spacing: 0.5px;
         }
 
-        .item-status {
-            display: none;
-        }
-
         .ingredients-table {
             padding: 0 0 0 20px;
         }
@@ -271,7 +221,6 @@
             justify-content: space-between;
             align-items: center;
             padding: 6px 0;
-            border-bottom: none;
         }
 
         .ingredient-row-name {
@@ -283,11 +232,6 @@
         .ingredient-row-name::before {
             content: '- ';
             color: #666;
-        }
-
-        .ingredient-row-status {
-            font-size: 1.2em;
-            margin-left: 10px;
         }
 
         .ingredient-row-status.present {
@@ -379,6 +323,61 @@
         .override-btn:hover {
             background: #b71c1c;
         }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: #2d2d2d;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9);
+            min-width: 400px;
+        }
+
+        .modal-message {
+            color: #fff;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+
+        .modal-message .order-num {
+            color: #00c853;
+        }
+
+        .next-order-btn {
+            padding: 16px 32px;
+            background: #00c853;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: background 0.2s;
+        }
+
+        .next-order-btn:hover {
+            background: #00b248;
+        }
     </style>
 </head>
 <body>
@@ -386,15 +385,12 @@
         <div class="header-left">
             <h1 id="orderNumber">Libra Visión Monitor</h1>
         </div>
-        <div class="header-right">
-            <div id="status" class="status waiting">Waiting for data...</div>
-            <div class="timestamp" id="timestamp">--</div>
-            <button class="refresh-btn" onclick="fetchData()">Refresh</button>
-        </div>
+        <!-- header-right hidden -->
+        <div class="header-right"></div>
     </div>
 
     <div class="main-container">
-        <!-- Left Column: Image & Weight -->
+        <!-- Left Column -->
         <div class="column">
             <div class="column-header">Visual & Weight</div>
             <div class="image-container">
@@ -408,30 +404,41 @@
             </div>
         </div>
 
-        <!-- Middle Column: Items -->
+        <!-- Middle Column -->
         <div class="column">
             <div class="column-header">Order Items</div>
             <div class="items-list" id="itemsList">
                 <div class="chit-header">
                     <div class="chit-title">ORDER TICKET</div>
-                    <div class="chit-time" id="chitTime">--:--</div>
+                    <!-- chit-time removed -->
                 </div>
             </div>
         </div>
 
-        <!-- Right Column: Ticket Status -->
+        <!-- Right Column -->
         <div class="column">
             <div class="column-header">Ticket Status</div>
             <div class="ticket-container">
                 <div class="ticket-order" id="ticketOrder">Order: --</div>
-                <button class="complete-btn" id="completeBtn" disabled>Complete Order</button>
+                <button class="complete-btn" id="completeBtn" disabled onclick="completeOrder()">Complete Order</button>
                 <div class="error-message" id="orderError">Order must be corrected before completion.</div>
-                <button class="override-btn" id="overrideBtn" style="display: none;">Override & Complete</button>
+                <button class="override-btn" id="overrideBtn" style="display: none;" onclick="completeOrder()">Override & Complete</button>
             </div>
         </div>
     </div>
 
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-message">
+                <span class="order-num" id="modalOrderNum">--</span> Complete!
+            </div>
+            <button class="next-order-btn" onclick="closeModal()">Next Order</button>
+        </div>
+    </div>
+
     <script>
+        // same JS, but no chitTime or header-right updates needed
         async function fetchData() {
             try {
                 const orderNumberResp = await fetch('/order');
@@ -441,10 +448,6 @@
 
                 const dataResponse = await fetch('/data');
                 const data = await dataResponse.json();
-
-                const statusEl = document.getElementById('status');
-                statusEl.className = 'status connected';
-                statusEl.textContent = 'Connected ✓';
 
                 const weightResponse = await fetch('/weight');
                 const weightData = await weightResponse.json();
@@ -459,13 +462,9 @@
                 if (weightData.weight !== null && weightData.theoretical_weight !== null) {
                     const percentage = (weightData.weight / weightData.theoretical_weight) * 100;
                     const percentageDiff = Math.abs(percentage - 100);
-
                     weightTarget.textContent = `Target: ${weightData.theoretical_weight}g`;
-                    if (percentage > 100) {
-                        weightPercentage.textContent = `+${percentageDiff.toFixed(1)}%`;
-                    } else {
-                        weightPercentage.textContent = `-${percentageDiff.toFixed(1)}%`;
-                    }
+                    weightPercentage.textContent = `${percentage > 100 ? '+' : '-'}${percentageDiff.toFixed(1)}%`;
+
                     if (percentageDiff > weightData.tolerance) {
                         weightDisplay.classList.add('out-of-tolerance');
                         weightDisplay.classList.remove('in-tolerance');
@@ -481,31 +480,16 @@
                     weightDisplay.classList.remove('out-of-tolerance', 'in-tolerance');
                 }
 
-                if (data.timestamp) {
-                    const date = new Date(data.timestamp * 1000);
-                    document.getElementById('timestamp').textContent = date.toLocaleString();
-                    document.getElementById('chitTime').textContent = date.toLocaleTimeString();
-                } else {
-                    document.getElementById('timestamp').textContent = 'No timestamp';
-                    document.getElementById('chitTime').textContent = '--:--';
-                }
-
                 document.getElementById('foodImage').src = '/image?t=' + new Date().getTime();
 
                 const itemsResponse = await fetch('/items');
                 const items = await itemsResponse.json();
 
                 const itemsList = document.getElementById('itemsList');
-
-                // Preserve chit header
-                const chitHeader = itemsList.querySelector('.chit-header');
                 itemsList.innerHTML = '';
                 const newHeader = document.createElement('div');
                 newHeader.className = 'chit-header';
-                newHeader.innerHTML = `
-                    <div class="chit-title">${orderNumber.toUpperCase()}</div>
-                    <div class="chit-time" id="chitTime">ENJOY BY 11:48</div>
-                `;
+                newHeader.innerHTML = `<div class="chit-title">${orderNumber.toUpperCase()}</div>`;
                 itemsList.appendChild(newHeader);
 
                 if (items && Array.isArray(items) && items.length > 0) {
@@ -516,19 +500,12 @@
 
                         const itemCard = document.createElement('div');
                         itemCard.className = `item-card ${itemFullyPresent ? 'present' : 'missing'}`;
-
                         const itemHeader = document.createElement('div');
                         itemHeader.className = 'item-header';
-
                         const itemName = document.createElement('div');
                         itemName.className = 'item-name';
                         itemName.textContent = item.name;
-
-                        const itemStatus = document.createElement('div');
-                        itemStatus.className = `item-status ${itemFullyPresent ? 'present' : 'missing'}`;
-                        itemStatus.textContent = itemFullyPresent ? '✓' : '✗';
-
-                        itemHeader.append(itemName, itemStatus);
+                        itemHeader.append(itemName);
                         itemCard.appendChild(itemHeader);
 
                         if (hasIngredients) {
@@ -548,18 +525,10 @@
 
                         itemsList.appendChild(itemCard);
                     });
-                } else {
-                    const noData = document.createElement('div');
-                    noData.className = 'no-data';
-                    noData.textContent = 'No items data';
-                    itemsList.appendChild(noData);
                 }
 
                 updateCompletionStatus();
             } catch (error) {
-                const statusEl = document.getElementById('status');
-                statusEl.className = 'status error';
-                statusEl.textContent = 'Error connecting to server';
                 console.error('Error fetching data:', error);
             }
         }
@@ -587,7 +556,19 @@
             }
         }
 
+        function completeOrder() {
+            const orderNum = document.getElementById("orderNumber").textContent;
+            document.getElementById("modalOrderNum").textContent = orderNum;
+            document.getElementById("modalOverlay").classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById("modalOverlay").classList.remove('active');
+            fetchData();
+        }
+
         fetchData();
+        setInterval(fetchData, 1000);
     </script>
 </body>
 </html>

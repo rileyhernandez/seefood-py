@@ -78,15 +78,16 @@ def get_weight():
             return make_response("No weight available", 404)
 
 
+
 def run_flask():
     app.run(host='0.0.0.0', port=5000, debug=False, use_reloader=False)
 
 def main():
-    scale = Phidget.new(9775979.599626426, 0.0001310482621192932-0.00002608434)
+    scale = Phidget.new(9775979.599626426, 0.0001310482621192932-0.00002608434+0.00005360076)
     camera = Camera()
 
     image_path = Path(__file__).parent.parent / ".images" / "test.jpg"
-    open_ai_convo = OpenAiConvo(image_path=image_path)
+    open_ai_convo = OpenAiConvo()
 
     def cleanup_and_exit(sig=None, frame=None):
         print("\nShutting down gracefully...")
@@ -118,11 +119,13 @@ def main():
             weight = round(scale.weigh_median(8, 250))
             print(f"Weight: {weight}g")
 
+        image_path = Path(__file__).parent.parent / ".images" / f"{int(time.time())}.jpg"
+
         # Capture OpenAI response (returns JSON string)
         items_json = None
-        def capture_items():
+        def capture_items(path: Path):
             nonlocal items_json
-            items_json = open_ai_convo.prompt()
+            items_json = open_ai_convo.prompt(path)
             print("--- Detected Items: ---")
             try:
                 items = json.loads(items_json)
@@ -132,12 +135,12 @@ def main():
             print("----------------------")
 
         # Image path for this run
-        image_path = Path(__file__).parent.parent / ".images" / "test.jpg"
+        # image_path = Path(__file__).parent.parent / ".images" / "test.jpg"
 
         # Start threads
         scale_thread = threading.Thread(target=capture_weight)
         camera_thread = threading.Thread(target=camera.capture, args=(image_path,))
-        llm_thread = threading.Thread(target=capture_items)
+        llm_thread = threading.Thread(target=capture_items, args=(image_path,))
 
         scale_thread.start()
         camera_thread.start()
@@ -152,8 +155,12 @@ def main():
 
         # Update shared data
         with data_lock:
-            latest_data["weight"] = weight
-            latest_data["theoretical_weight"] = 480
+            if weight is None or weight < 10:
+                latest_data["weight"] = 0
+            else:
+                latest_data["weight"] = weight
+
+            latest_data["theoretical_weight"] = 400
             latest_data["tolerance"] = 5
 
             latest_data["image_path"] = str(image_path)

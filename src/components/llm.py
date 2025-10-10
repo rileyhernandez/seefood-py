@@ -30,16 +30,18 @@ system_prompt = """
     Here are our ingredients:
 
     Order Items:
-    Hawaiian Ahi Bowl (white sushi rice, ahi tuna, green onion, cucumber, avocado),
-
+    Hawaiian Ahi Bowl (Ahi tuna, Edamame, Seaweed salad, Sesame seeds, White rice, Avocado, Pickled Ginger)
+    
+    By the way, if there is a bowl in the image, assume there is always Ahi tuna present.
     For each item in the list, I want you to return whether or not it is present, and if it has ingredients, return if it's ingredients are present in the following way.
     You should respond only with a valid array of json objects.
     Each json object in the array should represent an item in the item list. 
     Each item json should have the field "name" with a value of a string of the item's name and a field called "present" with a boolean value of it is present in the picture.
-    If i provided ingredients for the item, there should also be a field called "ingredients" and that should be an array of the ingredients i provided, each with a "name" field for their
+    If i provided ingredients for the item (indicated by parentheses following the item, only consider ingredients if i have them listed in parentheses!), there should also be a field called "ingredients" and that should be an array of the ingredients i provided, each with a "name" field for their
     name and and "present" field with a boolean of its presence.
     For items with ingredients, only consider the ingredient present if it is in that item. Not if it is present somewhere else in the picture.
     Respond only with a valid JSON, no extra text or code fences.
+    If nothing is present, make sure to still give the JSON just with the items as false in the present field.
 
     """
 
@@ -48,21 +50,19 @@ class OpenAiConvo:
     client: OpenAI
     model: str
     system_prompt: str
-    image_path: Path
 
-    def __init__(self, image_path: Path, system_prompt: str = system_prompt,  model: str = "gpt-4o-mini"):
+    def __init__(self, system_prompt: str = system_prompt,  model: str = "gpt-4o-mini"):
         client = OpenAI()
         self.client = client
         self.model = model
         self.system_prompt = system_prompt
-        self.image_path = image_path
 
-    def _encode_image(self) -> str:
-        with open(self.image_path, "rb") as f:
+    def _encode_image(self, image_path: Path) -> str:
+        with open(image_path, "rb") as f:
             return base64.b64encode(f.read()).decode("utf-8")
 
-    def prompt(self, notes: str = "Analyze this meal.") -> str:
-        image_b64 = self._encode_image()
+    def prompt(self, image_path: Path, notes: str = "Analyze this meal.") -> str:
+        image_b64 = self._encode_image(image_path)
 
         start = time.time()
         response = self.client.responses.create(
