@@ -69,7 +69,7 @@ if __name__ == "__main__":
                     camera.release()
                     print("Critical error: \n", e)
                     sys.exit(1)
-        case 'led':
+        case ['led']:
             print("Running LED test...")
             red = gpiozero.LED(17)
             green = gpiozero.LED(27)
