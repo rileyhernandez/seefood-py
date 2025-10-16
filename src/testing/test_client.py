@@ -13,7 +13,7 @@ class TestClient:
         """
         self.server_url = server_url
 
-    def send(self, fields: dict, image_path: str = None, image_bytes: bytes = None, filename: str = "upload.jpg"):
+    def send(self, fields: dict, image_path: str = None, image_bytes: bytes = None, filename: str = None):
         """
         Send data and optional image to the server.
 
