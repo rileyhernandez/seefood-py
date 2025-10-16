@@ -2,7 +2,7 @@ import subprocess
 import cv2
 import time
 
-DEVICE = "/dev/video4"
+DEVICE = "/dev/video0"
 WIDTH = 1280
 HEIGHT = 720
 PIX_FMT = "MJPG"
