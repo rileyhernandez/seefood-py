@@ -59,7 +59,7 @@ if __name__ == "__main__":
             weight = scale.live_weigh()
             img_bytes = camera.capture()
             print("Weight: ", weight)
-            client.send({"weight": weight})
+            client.send({"weight": weight, "image": img_bytes})
             time.sleep(0.25)
         except Exception as e:
             camera.release()
