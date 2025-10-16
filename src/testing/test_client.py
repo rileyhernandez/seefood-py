@@ -43,6 +43,7 @@ class TestClient:
 if __name__ == "__main__":
     match sys.argv[1:]:
         case []:
+            print("Running default test...")
             ip = "192.168.37.255"
             print("Using default host ip: ", ip)
             host = f"http://{ip}:8080/upload"
@@ -69,6 +70,7 @@ if __name__ == "__main__":
                     print("Critical error: \n", e)
                     sys.exit(1)
         case 'led':
+            print("Running LED test...")
             red = gpiozero.LED(17)
             green = gpiozero.LED(27)
             while True:
@@ -78,6 +80,5 @@ if __name__ == "__main__":
                 green.on()
                 time.sleep(1)
                 green.off()
-        # case 'scale':
 
 
