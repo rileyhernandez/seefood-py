@@ -81,11 +81,10 @@ class Camera:
         # Allow settings to take effect
         time.sleep(0.5)
 
-    def capture(self, as_bytes: bool = True, image_format: str = ".jpg"):
+    def capture(self, image_format: str = ".jpg") -> bytes:
         """
         Capture a frame from the camera.
-        If as_bytes=True, return image data as bytes.
-        Otherwise, return the numpy array.
+        Returns as bytes
         """
         frame = None
         for _ in range(5):  # flush stale frames
@@ -93,14 +92,11 @@ class Camera:
             if not ret:
                 raise RuntimeError("Failed to grab frame from camera")
 
-        if as_bytes:
-            # Encode the image in memory
-            success, buffer = cv2.imencode(image_format, frame)
-            if not success:
-                raise RuntimeError("Failed to encode frame to bytes")
-            return buffer.tobytes()
-        else:
-            return frame  # return the numpy array directly
+        # Encode the image in memory
+        success, buffer = cv2.imencode(image_format, frame)
+        if not success:
+            raise RuntimeError("Failed to encode frame to bytes")
+        return buffer.tobytes()
 
     def release(self):
         """Release the camera stream."""
