@@ -25,16 +25,16 @@ class TestClient:
         """
         files = {}
         if image_path:
-            files["file"] = (image_path.split("/")[-1], open(image_path, "rb"), "application/octet-stream")
+            files["image"] = (image_path.split("/")[-1], open(image_path, "rb"), "application/octet-stream")
         elif image_bytes:
-            files["file"] = (filename, image_bytes, "application/octet-stream")
+            files["image"] = (filename, image_bytes, "application/octet-stream")
 
         print(f"→ Sending POST to {self.server_url}")
         response = requests.post(self.server_url, data=fields, files=files if files else None)
 
         # If file opened, close it
         if image_path:
-            files["file"][1].close()
+            files["image"][1].close()
 
         print(f"← Status: {response.status_code}")
         return response
