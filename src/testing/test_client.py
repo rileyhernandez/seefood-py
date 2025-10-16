@@ -54,19 +54,29 @@ if __name__ == "__main__":
 
             camera = Camera()
 
+            button = gpiozero.Button(22)
+            red = gpiozero.LED(17)
+            green = gpiozero.LED(27)
+
             while True:
                 try:
+                    button.wait_for_active()
+                    red.on()
                     weight = scale.live_weigh()
                     image_bytes = camera.capture()
+                    red.off()
+                    green.on()
                     print("Weight: ", weight)
                     client.send(
                         fields={"weight": weight},
                         image_bytes=image_bytes,
                         filename="capture.jpg"
                     )
-                    time.sleep(0.25)
+                    green.off()
                 except Exception as e:
                     camera.release()
+                    red.off()
+                    green.off()
                     print("Critical error: \n", e)
                     sys.exit(1)
         case ['led']:
