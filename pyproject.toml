@@ -31,6 +31,7 @@ dependencies = [
     "phidget22>=1.23.20250925",
     "python-dotenv>=1.1.1",
     "requests>=2.32.5",
+    "rpi-gpio>=0.7.1",
     "setuptools>=80.9.0",
     "smbus2>=0.5.0",
     "sparkfun-qwiic-nau7802>=2.0.0",
