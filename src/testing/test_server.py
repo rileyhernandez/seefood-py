@@ -24,12 +24,11 @@ PAGE_TEMPLATE = """
 <body>
 <h1>📥 Incoming Uploads</h1>
 <table>
-<tr><th>Time</th><th>Name</th><th>Comment</th><th>Image</th></tr>
+<tr><th>Time</th><th>Weight</th><th>Image</th></tr>
 {% for u in uploads %}
 <tr>
     <td>{{ u.time }}</td>
-    <td>{{ u.name }}</td>
-    <td>{{ u.comment }}</td>
+    <td>{{ u.weight }}</td>
     <td>
     {% if u.image %}
         <img src="data:image/jpeg;base64,{{ u.image }}" />
@@ -59,8 +58,7 @@ def upload():
 
     uploads.append({
         "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "name": form_data.get("name"),
-        "comment": form_data.get("comment"),
+        "weight": form_data.get("weight"),
         "image": image_b64
     })
 

@@ -3,6 +3,7 @@ import time
 import sys
 from ..components.scale import Scale
 from ..config import Scale as ScaleConfig
+from ..components.camera import Camera
 
 class TestClient:
     def __init__(self, server_url):
@@ -47,10 +48,20 @@ if __name__ == "__main__":
 
     host = f"http://{ip}:8080/upload"
     client = TestClient(host)
+
     config = ScaleConfig(0.0013512, 100)
     scale = Scale.new(config)
+
+    camera = Camera()
+
     while True:
-        weight = scale.live_weigh()
-        print("Weight: ", weight)
-        client.send({"weight": weight})
-        time.sleep(0.25)
+        try:
+            weight = scale.live_weigh()
+            img_bytes = camera.capture()
+            print("Weight: ", weight)
+            client.send({"weight": weight})
+            time.sleep(0.25)
+        except Exception as e:
+            camera.release()
+            print("Critical error: \n", e)
+            sys.exit(1)
