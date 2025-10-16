@@ -30,9 +30,9 @@ system_prompt = """
     Here are our ingredients:
 
     Order Items:
-    Hawaiian Ahi Bowl (Ahi tuna, Edamame, Seaweed salad, Sesame seeds, White rice, Avocado, Pickled Ginger)
+    Dave's Taco Bowl (cilantro lime brown rice, purple cabbage, blackened chicken, avocado, cotija cheese, black beans, chipotle crema, salsa verde)
     
-    By the way, if there is a bowl in the image, assume there is always Ahi tuna present.
+    By the way the following ingredients will be in round containers on the side: chipotle crema, salsa verde.
     For each item in the list, I want you to return whether or not it is present, and if it has ingredients, return if it's ingredients are present in the following way.
     You should respond only with a valid array of json objects.
     Each json object in the array should represent an item in the item list. 

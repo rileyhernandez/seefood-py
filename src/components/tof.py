@@ -2,7 +2,7 @@ import time
 from VL53L0X import VL53L0X, Vl53l0xAccuracyMode  # type: ignore
 from dataclasses import dataclass
 from typing import Self
-from config import Tof as TofConfig
+from ..config import Tof as TofConfig
 
 @dataclass
 class Tof:
