@@ -61,6 +61,7 @@ if __name__ == "__main__":
             while True:
                 try:
                     button.wait_for_active()
+                    button.wait_for_inactive()
                     red.on()
                     weight = scale.live_weigh()
                     image_bytes = camera.capture()
@@ -72,6 +73,7 @@ if __name__ == "__main__":
                         image_bytes=image_bytes,
                         filename="capture.jpg"
                     )
+                    time.sleep(1)
                     green.off()
                 except Exception as e:
                     camera.release()
