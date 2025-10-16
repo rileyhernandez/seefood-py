@@ -4,6 +4,7 @@ import sys
 from ..components.scale import Scale
 from ..config import Scale as ScaleConfig
 from ..components.camera import Camera
+import gpiozero
 
 class TestClient:
     def __init__(self, server_url):
@@ -40,32 +41,43 @@ class TestClient:
         return response
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        ip = sys.argv[1]
-    else:
-        ip = "192.168.37.255"
-        print("Using default host ip: ", ip)
+    match sys.argv[1:]:
+        case []:
+            ip = "192.168.37.255"
+            print("Using default host ip: ", ip)
+            host = f"http://{ip}:8080/upload"
+            client = TestClient(host)
 
-    host = f"http://{ip}:8080/upload"
-    client = TestClient(host)
+            config = ScaleConfig(0.0013512, 100)
+            scale = Scale.new(config)
 
-    config = ScaleConfig(0.0013512, 100)
-    scale = Scale.new(config)
+            camera = Camera()
 
-    camera = Camera()
+            while True:
+                try:
+                    weight = scale.live_weigh()
+                    image_bytes = camera.capture()
+                    print("Weight: ", weight)
+                    client.send(
+                        fields={"weight": weight},
+                        image_bytes=image_bytes,
+                        filename="capture.jpg"
+                    )
+                    time.sleep(0.25)
+                except Exception as e:
+                    camera.release()
+                    print("Critical error: \n", e)
+                    sys.exit(1)
+        case 'led':
+            red = gpiozero.LED(17)
+            green = gpiozero.LED(27)
+            while True:
+                red.on()
+                time.sleep(1)
+                red.off()
+                green.on()
+                time.sleep(1)
+                green.off()
+        # case 'scale':
 
-    while True:
-        try:
-            weight = scale.live_weigh()
-            image_bytes = camera.capture()
-            print("Weight: ", weight)
-            client.send(
-                fields={"weight": weight},
-                image_bytes=image_bytes,
-                filename="capture.jpg"
-            )
-            time.sleep(0.25)
-        except Exception as e:
-            camera.release()
-            print("Critical error: \n", e)
-            sys.exit(1)
+
