@@ -80,5 +80,12 @@ if __name__ == "__main__":
                 green.on()
                 time.sleep(1)
                 green.off()
-
+        case ['button']:
+            print("Running Button test...")
+            button = gpiozero.Button(22)
+            while True:
+                button.wait_for_active()
+                print("Button pressed!")
+                button.wait_for_inactive()
+                print("Button released!")
 
