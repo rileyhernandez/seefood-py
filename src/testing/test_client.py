@@ -89,7 +89,7 @@ if __name__ == "__main__":
                 button.wait_for_inactive()
                 print("Button released!")
 
-        case ['led button']:
+        case ['led-button']:
             print("Running LED and Button test...")
             button = gpiozero.Button(22)
             red = gpiozero.LED(17)
