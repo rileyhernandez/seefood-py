@@ -29,11 +29,3 @@ class Scale:
 
     def live_weigh(self) -> float:
         return self.read()*self.config.gain
-
-
-if __name__ == "__main__":
-    config = ScaleConfig(0.0013512, 100)
-    scale = Scale.new(config)
-    for _ in range(10):
-        print("Weight: ", scale.live_weigh())
-        time.sleep(0.25)
