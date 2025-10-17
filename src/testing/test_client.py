@@ -53,13 +53,12 @@ if __name__ == "__main__":
             scale = Scale.new(config)
 
             camera = Camera()
-
             button = gpiozero.Button(22)
             red = gpiozero.LED(17)
             green = gpiozero.LED(27)
 
-            while True:
-                try:
+            try:
+                while True:
                     button.wait_for_active()
                     button.wait_for_inactive()
                     red.on()
@@ -75,12 +74,17 @@ if __name__ == "__main__":
                     )
                     time.sleep(1)
                     green.off()
-                except Exception as e:
-                    camera.release()
-                    red.off()
-                    green.off()
-                    print("Critical error: \n", e)
-                    sys.exit(1)
+            except KeyboardInterrupt:
+                print("\nKeyboardInterrupt received. Cleaning up...")
+            except Exception as e:
+                print("Critical error: \n", e)
+            finally:
+                # Always run cleanup
+                camera.release()
+                red.off()
+                green.off()
+                print("Resources released, exiting.")
+                sys.exit(0)
         case ['led']:
             print("Running LED test...")
             red = gpiozero.LED(17)
