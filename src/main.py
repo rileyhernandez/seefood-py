@@ -1,171 +1,118 @@
-import threading
-import signal
-import sys
+import os
 import time
-import json
-from pathlib import Path
-from flask import Flask, jsonify, send_file, make_response
+import gpiozero
+import requests
+from datetime import datetime, timezone
 from dotenv import load_dotenv
+from google.oauth2 import service_account
+from google.auth.transport.requests import Request
 
-from components.camera import Camera
-from components.scale import Phidget
-from components.llm import OpenAiConvo
+from src.components.scale import Scale
+from src.components.camera import Camera
+from src.config import load_config
 
-
-# Shared data structure
-latest_data = {
-    "weight": None,
-    "image_path": Path(__file__).parent.parent / ".images" / "test.jpg",
-    "timestamp": None,
-    "items": None
-}
-data_lock = threading.Lock()
-
-# Flask app
-app = Flask(__name__)
-
-load_dotenv(dotenv_path=Path(__file__).parent.parent / ".env")
-
-@app.route('/')
-def index():
-    html_path = Path(__file__).parent / 'api' / 'client.html'
-    return send_file(html_path)
-
-@app.route('/data')
-def get_data():
-    with data_lock:
-        metadata = {
-            "weight": latest_data.get("weight"),
-            "timestamp": latest_data.get("timestamp")
-        }
-        return jsonify(metadata)
-
-@app.route('/order')
-def get_order():
-    return "Order #263"
-
-@app.route('/image')
-def get_image():
-    with data_lock:
-        img_path = latest_data.get("image_path")
-        if img_path and Path(img_path).exists():
-            return send_file(img_path, mimetype="image/jpeg")
-        else:
-            return make_response("No image available", 404)
-
-@app.route('/items')
-def get_items():
-    with data_lock:
-        items_str = latest_data.get("items")
-        if items_str is not None:
-            try:
-                items = json.loads(items_str)
-                return jsonify(items)
-            except json.JSONDecodeError:
-                return make_response("Invalid JSON response", 500)
-        else:
-            return make_response("No items available", 404)
-
-@app.route('/weight')
-def get_weight():
-    with data_lock:
-        weight = latest_data.get("weight")
-        theoretical_weight = latest_data.get("theoretical_weight")
-        tolerance = latest_data.get("tolerance")
-        if weight is not None:
-            return jsonify({"weight": weight, "theoretical_weight": theoretical_weight, "tolerance": tolerance})
-        else:
-            return make_response("No weight available", 404)
-
-
-
-def run_flask():
-    app.run(host='0.0.0.0', port=5000, debug=False, use_reloader=False)
+load_dotenv()
+GCP_KEY_PATH = os.getenv("GCP_KEY")
+BACKEND_URL = os.getenv("BACKEND_URL")
+CONFIG_PATH = os.getenv("CONFIG_PATH")
 
 def main():
-    scale = Phidget.new(9775979.599626426, 0.0001310482621192932-0.00002608434+0.00005360076)
-    camera = Camera()
+    config = load_config(CONFIG_PATH)
+    scale = Scale.new(config.scale)
+    camera = Camera(config.camera)
+    button = gpiozero.Button(config.button.pin)
+    red = gpiozero.LED(config.red_led.pin)
+    green = gpiozero.LED(config.green_led.pin)
 
-    image_path = Path(__file__).parent.parent / ".images" / "test.jpg"
-    open_ai_convo = OpenAiConvo()
 
-    def cleanup_and_exit(sig=None, frame=None):
-        print("\nShutting down gracefully...")
-        camera.release()
-        sys.exit(0)
-
-    signal.signal(signal.SIGINT, cleanup_and_exit)
-
-    # Start Flask in background thread
-    flask_thread = threading.Thread(target=run_flask, daemon=True)
-    flask_thread.start()
-    print("Flask server running on http://localhost:5000")
-    print("View dashboard at: http://localhost:5000/")
-    print("API endpoints:")
-    print("  /data  → weight and timestamp")
-    print("  /image → actual image")
-    print("  /items → detected items with ingredients")
-
-    print("\nStarting seefood...")
     while True:
-        input("Press enter when ready for next reading...")
+        try:
+            button.wait_for_active()
+            button.wait_for_inactive()
+            red.on()
+            weight = scale.live_weigh()
+            image_bytes = camera.capture()
+            red.off()
+            green.on()
+        except KeyboardInterrupt as e:
+            print("\nKeyboardInterrupt received. Cleaning up...")
+            camera.release()
+            red.off()
+            green.off()
+            break
+        except Exception as e:
+            print("Error taking reading: \n", e, "\nRetrying...")
+            break
 
-        start_time = time.time()
+        send_reading(image_bytes, weight, config.device.serial)
+        time.sleep(1)
+        green.off()
 
-        # Capture weight
-        weight = None
-        def capture_weight():
-            nonlocal weight
-            weight = round(scale.weigh_median(8, 250))
-            print(f"Weight: {weight}g")
 
-        image_path = Path(__file__).parent.parent / ".images" / f"{int(time.time())}.jpg"
+def send_reading(image_bytes: bytes, weight: float, device_id: str, filename: str ="image.jpg") -> dict:
+    """
+    Send a reading to the backend.
 
-        # Capture OpenAI response (returns JSON string)
-        items_json = None
-        def capture_items(path: Path):
-            nonlocal items_json
-            items_json = open_ai_convo.prompt(path)
-            print("--- Detected Items: ---")
-            try:
-                items = json.loads(items_json)
-                print(json.dumps(items, indent=2))
-            except json.JSONDecodeError:
-                print(items_json)
-            print("----------------------")
+    Args:
+        image_bytes: Image data as bytes
+        weight: Weight measurement in grams (float)
+        device_id: Unique identifier for the device
+        filename: Optional filename for the image (default: "image.jpg")
 
-        # Image path for this run
-        # image_path = Path(__file__).parent.parent / ".images" / "test.jpg"
+    Returns:
+        dict: Response from the server
+    """
+    # Prepare the timestamp in ISO 8601 format with UTC timezone
+    timestamp = datetime.now(timezone.utc).isoformat()
+    data = {
+        'weight': str(weight),
+        'device_id': device_id,
+        'timestamp': timestamp
+    }
 
-        # Start threads
-        scale_thread = threading.Thread(target=capture_weight)
-        camera_thread = threading.Thread(target=camera.capture, args=(image_path,))
-        llm_thread = threading.Thread(target=capture_items, args=(image_path,))
+    # Prepare the file from bytes
+    files = {
+        'image': (
+            filename,  # filename
+            image_bytes,  # bytes data
+            'image/jpeg'  # MIME type
+        )
+    }
 
-        scale_thread.start()
-        camera_thread.start()
-        camera_thread.join()  # Wait for image before LLM
-        llm_thread.start()
+    headers = {}
+    token = get_auth_token()
+    if token:
+        headers['Authorization'] = f'Bearer {token}'
 
-        scale_thread.join()
-        llm_thread.join()
+    # Make the POST request
+    response = requests.post(
+        BACKEND_URL,
+        data=data,
+        files=files,
+        headers=headers
+    )
 
-        end_time = time.time()
-        print(f"--- Run Time: {end_time - start_time:.2f}s ---")
+    # Check response
+    if response.status_code == 201:
+        print("✓ Reading uploaded successfully!")
+        return response.json()
+    else:
+        print(f"✗ Error: {response.status_code}")
+        print(response.json())
+        return dict(response.json())
 
-        # Update shared data
-        with data_lock:
-            if weight is None or weight < 10:
-                latest_data["weight"] = 0
-            else:
-                latest_data["weight"] = weight
+def get_auth_token():
+    """Get an identity token for authenticating with Cloud Functions."""
+    if not GCP_KEY_PATH:
+        return None
 
-            latest_data["theoretical_weight"] = 400
-            latest_data["tolerance"] = 5
+    credentials = service_account.IDTokenCredentials.from_service_account_file(
+        GCP_KEY_PATH,
+        target_audience=BACKEND_URL
+    )
 
-            latest_data["image_path"] = str(image_path)
-            latest_data["timestamp"] = time.time()
-            latest_data["items"] = items_json
+    credentials.refresh(Request())
+    return credentials.token
 
 if __name__ == "__main__":
     main()

@@ -1,7 +1,9 @@
 import subprocess
 import cv2
 import time
+from ..config import Camera as CameraConfig
 
+'''
 DEVICE = "/dev/video0"
 WIDTH = 1280
 HEIGHT = 720
@@ -19,64 +21,66 @@ EXPOSURE_TIME = 250
 FOCUS_ABSOLUTE = 280
 FOCUS_AUTO_CONTINUOUS = 0
 WHITE_BALANCE_AUTO = 0
+'''
 
-
-def apply_v4l2_settings_initial():
+def apply_v4l2_settings_initial(config: CameraConfig):
     """Apply all v4l2-ctl settings before opening the stream."""
+    device = f"/dev/video{config.device_index}"
     subprocess.run([
-        "v4l2-ctl", "-d", DEVICE,
-        "--set-parm", str(FPS),
-        "--set-fmt-video", f"width={WIDTH},height={HEIGHT},pixelformat={PIX_FMT}",
+        "v4l2-ctl", "-d", device,
+        "--set-parm", str(config.fps),
+        "--set-fmt-video", f"width={config.width},height={config.height},pixelformat={config.pix_fmt}",
     ], check=True)
 
     subprocess.run([
-        "v4l2-ctl", "-d", DEVICE,
-        "--set-ctrl", f"brightness={BRIGHTNESS}",
-        "--set-ctrl", f"contrast={CONTRAST}",
-        "--set-ctrl", f"saturation={SATURATION}",
-        "--set-ctrl", f"gain={GAIN}",
-        "--set-ctrl", f"sharpness={SHARPNESS}",
-        "--set-ctrl", f"white_balance_automatic={WHITE_BALANCE_AUTO}",
-        "--set-ctrl", f"white_balance_temperature={WHITE_BALANCE_TEMP}",
-        "--set-ctrl", f"auto_exposure={AUTO_EXPOSURE}",
-        "--set-ctrl", f"exposure_time_absolute={EXPOSURE_TIME}",
-        "--set-ctrl", f"focus_automatic_continuous={FOCUS_AUTO_CONTINUOUS}",
-        "--set-ctrl", f"focus_absolute={FOCUS_ABSOLUTE}"
+        "v4l2-ctl", "-d", device,
+        "--set-ctrl", f"brightness={config.brightness}",
+        "--set-ctrl", f"contrast={config.contrast}",
+        "--set-ctrl", f"saturation={config.saturation}",
+        "--set-ctrl", f"gain={config.gain}",
+        "--set-ctrl", f"sharpness={config.sharpness}",
+        "--set-ctrl", f"white_balance_automatic={config.white_balance_auto}",
+        "--set-ctrl", f"white_balance_temperature={config.white_balance_temp}",
+        "--set-ctrl", f"auto_exposure={config.auto_exposure}",
+        "--set-ctrl", f"exposure_time_absolute={config.exposure_time}",
+        "--set-ctrl", f"focus_automatic_continuous={config.focus_auto_continuous}",
+        "--set-ctrl", f"focus_absolute={config.focus_absolute}"
     ], check=True)
 
 
-def apply_critical_settings():
+def apply_critical_settings(config: CameraConfig):
     """Reapply critical settings that tend to reset after stream opens."""
+    device = f"/dev/video{config.device_index}"
     subprocess.run([
-        "v4l2-ctl", "-d", DEVICE,
-        "--set-ctrl", f"auto_exposure={AUTO_EXPOSURE}",
-        "--set-ctrl", f"exposure_time_absolute={EXPOSURE_TIME}",
-        "--set-ctrl", f"focus_automatic_continuous={FOCUS_AUTO_CONTINUOUS}",
-        "--set-ctrl", f"focus_absolute={FOCUS_ABSOLUTE}"
+        "v4l2-ctl", "-d", device,
+        "--set-ctrl", f"auto_exposure={config.auto_exposure}",
+        "--set-ctrl", f"exposure_time_absolute={config.exposure_time}",
+        "--set-ctrl", f"focus_automatic_continuous={config.focus_auto_continuous}",
+        "--set-ctrl", f"focus_absolute={config.focus_absolute}"
     ], check=True)
 
 
 class Camera:
-    def __init__(self, device=DEVICE):
+    def __init__(self, config: CameraConfig):
         # Apply all settings before opening the stream
-        apply_v4l2_settings_initial()
+        apply_v4l2_settings_initial(config)
         time.sleep(0.5)
 
         # Open the stream
-        self.cap = cv2.VideoCapture(device)
+        self.cap = cv2.VideoCapture(f"/dev/video{config.device_index}")
         if not self.cap.isOpened():
-            raise RuntimeError(f"Failed to open camera at {device}")
+            raise RuntimeError(f"Failed to open camera at /dev/video{config.device_index}")
 
         # Set OpenCV properties
-        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, WIDTH)
-        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, HEIGHT)
-        self.cap.set(cv2.CAP_PROP_FPS, FPS)
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, config.width)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, config.height)
+        self.cap.set(cv2.CAP_PROP_FPS, config.fps)
 
         # Let the stream stabilize
         time.sleep(0.5)
 
         # Reapply critical settings that may have reset
-        apply_critical_settings()
+        apply_critical_settings(config)
 
         # Allow settings to take effect
         time.sleep(0.5)
