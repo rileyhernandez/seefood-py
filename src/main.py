@@ -97,9 +97,9 @@ def send_reading(image_bytes: bytes, weight: float, device_id: str, filename: st
     }
 
     headers = {}
-    token = get_auth_token()
-    if token:
-        headers['Authorization'] = f'Bearer {token}'
+    # token = get_auth_token()
+    # if token:
+    #     headers['Authorization'] = f'Bearer {token}'
 
     # Make the POST request
     response = requests.post(
