@@ -1,0 +1,34 @@
+[device]
+model="SeefoodV0"
+serial="sfd-001"
+
+[scale]
+gain = 0.0013512
+sample_period_millis = 100
+
+[camera]
+device_index = 0
+width = 1280
+height = 720
+pix_fmt = "MJPG"
+fps = 10
+brightness = 0
+contrast = 22
+saturation = 120
+gain = 0
+white_balance_temp = 4624
+sharpness = 3
+auto_exposure = 1
+exposure_time = 250
+focus_absolute = 280
+focus_auto_continuous = 0
+white_balance_auto = 0
+
+[button]
+pin = 22
+
+[red_led]
+pin = 17
+
+[green_led]
+pin = 27
