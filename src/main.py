@@ -14,7 +14,7 @@ from src.components.camera import Camera
 from src.config import load_config
 
 load_dotenv()
-GCP_KEY_PATH = os.getenv("GCP_KEY")
+GCP_KEY = os.getenv("GCP_KEY")
 BACKEND_URL = os.getenv("BACKEND_URL")
 CONFIG_PATH = os.getenv("CONFIG_PATH")
 
@@ -96,6 +96,8 @@ def send_reading(image_bytes: bytes, weight: float, device_id: str, filename: st
         )
     }
 
+    params = { "key": GCP_KEY }
+
     headers = {}
     # token = get_auth_token()
     # if token:
@@ -106,7 +108,8 @@ def send_reading(image_bytes: bytes, weight: float, device_id: str, filename: st
         BACKEND_URL,
         data=data,
         files=files,
-        headers=headers
+        headers=headers,
+        params=params
     )
 
     # Check response
