@@ -1,0 +1,34 @@
+[Unit]
+Description=Seefood Python Service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+# Project directory
+WorkingDirectory=/home/seefood/seefood-py
+
+# Command to run
+ExecStart=/usr/bin/env uv run python -m src.main dev
+
+# Environment
+Environment="PYTHONUNBUFFERED=1"
+# Uncomment if you have an .env file:
+# EnvironmentFile=/home/seefood/seefood-py/.env
+
+# Always restart, regardless of exit code or signal
+Restart=always
+RestartSec=3
+
+# Run as the 'seefood' user (adjust if different)
+User=seefood
+Group=seefood
+
+# Logging
+StandardOutput=append:/var/log/seefood.log
+StandardError=append:/var/log/seefood-error.log
+
+# Increase systemd's stop timeout to allow graceful shutdown
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target
