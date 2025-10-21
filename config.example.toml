@@ -5,6 +5,7 @@ serial="sfd-001"
 [scale]
 gain = 0.0013512
 sample_period_millis = 100
+samples = 10
 
 [camera]
 device_index = 0

@@ -77,7 +77,7 @@ def main():
             logger.info("Order received!")
             logger.info("Taking reading...")
             red.on()
-            weight = scale.live_weigh()
+            weight = scale.median_weight()
             image_bytes = camera.capture()
             red.off()
             green.on()

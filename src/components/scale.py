@@ -29,3 +29,10 @@ class Scale:
 
     def live_weigh(self) -> float:
         return self.read()*self.config.gain
+
+    def median_weight(self) -> float:
+        weights = []
+        for _ in range(self.config.samples):
+            weights.append(self.live_weigh())
+            time.sleep(self.config.sample_period_millis/1000)
+        return sorted(weights)[len(weights)//2]
