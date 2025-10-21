@@ -38,14 +38,17 @@ try:
 except Exception as e:
     logging.error(f"Warning: {e}. Defaulting to {current_mode.name} mode.")
 
+logger.info(f"Running in {current_mode}")
+logger.info("Loading environment variables...")
 load_dotenv()
 GCP_KEY = os.getenv("GCP_KEY")
 BACKEND_URL = os.getenv("BACKEND_URL")
 CONFIG_PATH = os.getenv("CONFIG_PATH")
 if current_mode is Mode.DEV: BACKEND_URL = os.getenv("DEV_BACKEND_URL")
+logger.info("✓ Loaded environment variables!")
 
 def main():
-
+    logger.info("Loading config file...")
     try:
         config = load_config(CONFIG_PATH)
         scale = Scale.new(config.scale)
@@ -56,18 +59,27 @@ def main():
     except Exception as e:
         logger.error("Error running setup: {}".format(e))
         sys.exit(1)
+    logger.info("✓ Loaded config file!")
 
+    logger.info("Starting main loop...")
     failures = 0
     while True:
         try:
+            logger.info("Awaiting next order...")
             button.wait_for_active()
             button.wait_for_inactive()
+            logger.info("Order received!")
+            logger.info("Taking reading...")
             red.on()
             weight = scale.live_weigh()
             image_bytes = camera.capture()
             red.off()
             green.on()
+            logger.info("✓ Reading taken!")
             failures = 0
+            logger.info("Uploading reading...")
+            send_reading(image_bytes, weight, config.device.serial)
+            logger.info("✓ Reading uploaded!")
         except KeyboardInterrupt:
             logging.info("KeyboardInterrupt received. Cleaning up...")
             red.off()
@@ -81,8 +93,6 @@ def main():
             logging.error("Retrying...")
             continue
 
-
-        send_reading(image_bytes, weight, config.device.serial)
         time.sleep(1)
         green.off()
 
