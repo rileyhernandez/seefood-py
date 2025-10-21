@@ -4,6 +4,7 @@ import time
 import gpiozero
 import requests
 import logging
+from enum import Enum
 from datetime import datetime, timezone
 from dotenv import load_dotenv
 from google.oauth2 import service_account
@@ -13,14 +14,37 @@ from src.components.scale import Scale
 from src.components.camera import Camera
 from src.config import load_config
 
+class Mode(Enum):
+    DEV = "dev"
+    PROD = "prod"
+
+    @classmethod
+    def from_string(cls, mode_str):
+        if mode_str.lower() == "dev":
+            return cls.DEV
+        elif mode_str.lower() == "prod":
+            return cls.PROD
+        # Handles cases where the string isn't "dev" or "prod"
+        raise ValueError(f"Invalid mode specified: '{mode_str}'")
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+current_mode = Mode.PROD
+try:
+    if len(sys.argv) > 1:
+        user_input = sys.argv[1]
+        current_mode = Mode.from_string(user_input)
+except Exception as e:
+    logging.error(f"Warning: {e}. Defaulting to {current_mode.name} mode.")
+
 load_dotenv()
 GCP_KEY = os.getenv("GCP_KEY")
 BACKEND_URL = os.getenv("BACKEND_URL")
 CONFIG_PATH = os.getenv("CONFIG_PATH")
+if current_mode is Mode.DEV: BACKEND_URL = os.getenv("DEV_BACKEND_URL")
 
 def main():
-    logger = logging.getLogger()
-    logger.setLevel(logging.INFO)
 
     try:
         config = load_config(CONFIG_PATH)
@@ -45,16 +69,16 @@ def main():
             green.on()
             failures = 0
         except KeyboardInterrupt:
-            print("\nKeyboardInterrupt received. Cleaning up...")
-            camera.release()
+            logging.info("KeyboardInterrupt received. Cleaning up...")
             red.off()
             green.off()
+            camera.release()
             sys.exit(0)
         except Exception as e:
-
             failures += 1
             if failures > 2: break;
-            print("Error taking reading: \n", e, "\nRetrying...")
+            logging.error("Error taking reading: e")
+            logging.error("Retrying...")
             continue
 
 
@@ -114,11 +138,10 @@ def send_reading(image_bytes: bytes, weight: float, device_id: str, filename: st
 
     # Check response
     if response.status_code == 201:
-        print("✓ Reading uploaded successfully!")
+        logging.info("✓ Reading uploaded successfully!")
         return response.json()
     else:
-        print(f"✗ Error: {response.status_code}")
-        print(response.json())
+        logging.error(f"✗ Error: {response.status_code}\n{response.text}")
         return dict(response.json())
 
 def get_auth_token():
