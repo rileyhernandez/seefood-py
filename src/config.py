@@ -11,6 +11,7 @@ class Device:
 @dataclass
 class Scale:
     gain: float
+    offset: float
     sample_period_millis: int
     samples: int
 

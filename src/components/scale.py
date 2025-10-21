@@ -28,7 +28,7 @@ class Scale:
         return self.nau7802.get_reading()
 
     def live_weigh(self) -> float:
-        return self.read()*self.config.gain
+        return self.read()*self.config.gain + self.config.offset
 
     def median_weight(self) -> float:
         weights = []
