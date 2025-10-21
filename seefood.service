@@ -23,10 +23,6 @@ RestartSec=3
 User=seefood
 Group=seefood
 
-# Logging (simple persistent logs)
-StandardOutput=append:/var/log/seefood.log
-StandardError=append:/var/log/seefood-error.log
-
 # Allow some time for clean shutdown
 TimeoutStopSec=10
 
