@@ -160,18 +160,18 @@ def send_reading(image_bytes: bytes, weight: float, device_id: str, filename: st
         logging.error(f"✗ Error: {response.status_code}\n{response.text}")
         return dict(response.json())
 
-def get_auth_token():
-    """Get an identity token for authenticating with Cloud Functions."""
-    if not GCP_KEY_PATH:
-        return None
-
-    credentials = service_account.IDTokenCredentials.from_service_account_file(
-        GCP_KEY_PATH,
-        target_audience=BACKEND_URL
-    )
-
-    credentials.refresh(Request())
-    return credentials.token
+# def get_auth_token():
+#     """Get an identity token for authenticating with Cloud Functions."""
+#     if not GCP_KEY_PATH:
+#         return None
+#
+#     credentials = service_account.IDTokenCredentials.from_service_account_file(
+#         GCP_KEY_PATH,
+#         target_audience=BACKEND_URL
+#     )
+#
+#     credentials.refresh(Request())
+#     return credentials.token
 
 if __name__ == "__main__":
     main()

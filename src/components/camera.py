@@ -3,26 +3,6 @@ import cv2
 import time
 from ..config import Camera as CameraConfig
 
-'''
-DEVICE = "/dev/video0"
-WIDTH = 1280
-HEIGHT = 720
-PIX_FMT = "MJPG"
-FPS = 10
-
-BRIGHTNESS = 0
-CONTRAST = 22
-SATURATION = 120
-GAIN = 0
-WHITE_BALANCE_TEMP = 4624
-SHARPNESS = 3
-AUTO_EXPOSURE = 1
-EXPOSURE_TIME = 250
-FOCUS_ABSOLUTE = 280
-FOCUS_AUTO_CONTINUOUS = 0
-WHITE_BALANCE_AUTO = 0
-'''
-
 def apply_v4l2_settings_initial(config: CameraConfig):
     """Apply all v4l2-ctl settings before opening the stream."""
     device = f"/dev/video{config.device_index}"
