@@ -8,7 +8,7 @@ Wants=network-online.target
 WorkingDirectory=/home/seefood/seefood-py
 
 # Use full path to uv (no shell, no PATH lookup)
-ExecStart=/home/seefood/.local/bin/uv run python -m src.main dev
+ExecStart=/home/seefood/.local/bin/uv run python -m src.main
 
 # Environment settings
 Environment="PYTHONUNBUFFERED=1"

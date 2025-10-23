@@ -1,6 +1,8 @@
 import os
 import sys
 import time
+from dataclasses import dataclass
+
 import gpiozero
 import requests
 import logging
@@ -26,6 +28,13 @@ class Mode(Enum):
             return cls.PROD
         # Handles cases where the string isn't "dev" or "prod"
         raise ValueError(f"Invalid mode specified: '{mode_str}'")
+
+@dataclass
+class Data:
+    image_bytes: bytes
+    weight: float
+    device_id: str
+
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
