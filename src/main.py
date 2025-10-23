@@ -97,10 +97,7 @@ def main():
             logger.info("✓ Reading uploaded!")
         except KeyboardInterrupt:
             logging.info("KeyboardInterrupt received. Cleaning up...")
-            red.off()
-            green.off()
-            camera.release()
-            sys.exit(0)
+            break
         except Exception as e:
             failures += 1
             if failures > 2: break;
@@ -111,6 +108,9 @@ def main():
         time.sleep(1)
         green.off()
 
+    green.off()
+    red.off()
+    camera.release()
     logging.error("Unrecoverable error. Restarting system...")
     sys.exit(1)
 
