@@ -2,9 +2,11 @@ import requests
 import time
 import sys
 from ..components.scale import Scale
-from ..config import Scale as ScaleConfig
+from ..config import Scale as ScaleConfig, Config, load_config
 from ..components.camera import Camera
 import gpiozero
+from dotenv import load_dotenv
+import os
 
 class TestClient:
     def __init__(self, server_url):
@@ -43,19 +45,19 @@ class TestClient:
 if __name__ == "__main__":
     match sys.argv[1:]:
         case []:
-            print("Running default test...")
-            ip = "192.168.37.255"
-            print("Using default host ip: ", ip)
-            host = f"http://{ip}:8080/upload"
-            client = TestClient(host)
+            load_dotenv()
+            GCP_KEY = os.getenv("GCP_KEY")
+            BACKEND_URL = os.getenv("DEV_BACKEND_URL")
+            CONFIG_PATH = os.getenv("CONFIG_PATH")
+            config = load_config(CONFIG_PATH)
 
-            config = ScaleConfig(0.0013512, 100)
-            scale = Scale.new(config)
+            client = TestClient(BACKEND_URL)
+            scale = Scale.new(config.scale)
 
-            camera = Camera()
-            button = gpiozero.Button(22)
-            red = gpiozero.LED(17)
-            green = gpiozero.LED(27)
+            camera = Camera(config.camera)
+            button = gpiozero.Button(config.button.pin)
+            red = gpiozero.LED(config.red_led.pin)
+            green = gpiozero.LED(config.green_led.pin)
 
             try:
                 while True:
