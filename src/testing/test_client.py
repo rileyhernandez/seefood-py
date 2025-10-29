@@ -64,7 +64,7 @@ if __name__ == "__main__":
                     button.wait_for_active()
                     button.wait_for_inactive()
                     red.on()
-                    weight = scale.live_weigh()
+                    weight = scale.median_weight()
                     image_bytes = camera.capture()
                     red.off()
                     green.on()
