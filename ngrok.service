@@ -1,0 +1,15 @@
+[Unit]
+Description=Ngrok TCP Tunnel for SSH
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/usr/local/bin/ngrok tcp --region=us --remote-addr=7.tcp.ngrok.io:21255 22
+Restart=always
+User=seefood
+WorkingDirectory=/home/seefood
+EnvironmentFile=/home/seefood/.config/ngrok/ngrok.yml
+ExecStartPre=/bin/sleep 10
+
+[Install]
+WantedBy=multi-user.target
